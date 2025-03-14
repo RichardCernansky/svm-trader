@@ -2,12 +2,13 @@ import joblib
 from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, classification_report
+
 from src.data.load_data import load_crypto_data
 from src.config import *
 
 #load data
 print("Loading data...")
-X_train, X_test, y_train, y_test = load_crypto_data()
+X_train, X_test, y_train, y_test = load_crypto_data(BTCUSDT_data_path)
 
 #scale data
 scaler = StandardScaler()

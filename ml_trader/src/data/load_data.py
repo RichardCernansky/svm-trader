@@ -3,7 +3,7 @@ import numpy as np
 import ta
 from sklearn.model_selection import train_test_split
 
-def load_crypto_data(filename="data/BTCUSDT_hourly.csv", test=False):
+def load_crypto_data(filename, test=False):
     """
     Load and preprocess crypto data for model training/testing.
 
@@ -21,7 +21,7 @@ def load_crypto_data(filename="data/BTCUSDT_hourly.csv", test=False):
     df.set_index("timestamp", inplace=True)
 
     # Compute log returns
-    df["log_return"] = np.log(df["Close"] / df["Close"].shift(1))
+    df["log_return"] = np.log(df["Close"] / df["Close"].shift(1)) / np.log(df["Close"])
 
     # Define labels based on 1-hour interval price movement
     df["label"] = 0  # Default class (no significant movement)

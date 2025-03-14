@@ -1,8 +1,14 @@
 import pandas as pd
 import requests
 import time
+import config
+
+from src.config import START_DATE, END_DATE, SYMBOL
+
 
 def get_binance_ohlcv(symbol="BTCUSDT", interval="1h", start="2017-01-01", end="2024-03-11"):
+    """fetches from Binance API into local machine"""
+
     base_url = "https://api.binance.com/api/v3/klines"
     df_list = []
 
@@ -34,6 +40,6 @@ def get_binance_ohlcv(symbol="BTCUSDT", interval="1h", start="2017-01-01", end="
 
 print("Started fetching...")
 
-btc_data = get_binance_ohlcv("BTCUSDT", "1h", "2018-01-01", "2023-03-11")
+btc_data = get_binance_ohlcv(SYMBOL, "1h", START_DATE, END_DATE)
 btc_data.to_csv("data/BTCUSDT_hourly.csv")
 print(btc_data.head())
