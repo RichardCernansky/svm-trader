@@ -3,7 +3,8 @@ import numpy as np
 import ta
 from sklearn.model_selection import train_test_split
 
-def load_crypto_data(filename, test=False):
+
+def load_crypto_data(filename):
     """
     Load and preprocess crypto data for model training/testing.
 
@@ -22,11 +23,12 @@ def load_crypto_data(filename, test=False):
 
     # Compute log returns
     df["log_return"] = np.log(df["Close"] / df["Close"].shift(1)) / np.log(df["Close"])
+    ret_std = df["log_return"].std()
 
     # Define labels based on 1-hour interval price movement
     df["label"] = 0  # Default class (no significant movement)
-    df.loc[df["log_return"] >= 0.005, "label"] = 1  # Uptrend
-    df.loc[df["log_return"] <= -0.005, "label"] = -1  # Downtrend
+    df.loc[df["log_return"] >= ret_std, "label"] = 1  # Uptrend
+    df.loc[df["log_return"] <= ret_std, "label"] = -1  # Downtrend
 
     # === Technical Indicators ===
     # Bollinger Bands
@@ -44,6 +46,12 @@ def load_crypto_data(filename, test=False):
     # Remove NaN values caused by technical indicators
     df.dropna(inplace=True)
 
+    return df
+
+
+def data_train_test(filename, test=False):
+    df = load_crypto_data(filename)
+
     # === Feature Selection ===
     features = ["Close", "Volume", "log_return", "bb_pct", "macd", "macd_signal", "rsi"]
     X = df[features]
@@ -56,3 +64,10 @@ def load_crypto_data(filename, test=False):
         return X_test, y_test
 
     return X_train, X_test, y_train, y_test
+
+def data_backtest(filename):
+    df = load_crypto_data(filename)
+    features = ["Close", "Volume", "log_return", "bb_pct", "macd", "macd_signal", "rsi"]
+    X = df[features]
+
+    return X

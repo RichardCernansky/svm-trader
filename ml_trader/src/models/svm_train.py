@@ -3,12 +3,13 @@ from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score, classification_report
 
-from src.data.load_data import load_crypto_data
+from src.data.load_data import data_train_test
 from src.config import *
 
 #load data
 print("Loading data...")
-X_train, X_test, y_train, y_test = load_crypto_data(BTCUSDT_data_path)
+X_train, X_test, y_train, y_test = data_train_test(BTCUSDT_data_path)
+print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
 
 #scale data
 scaler = StandardScaler()
@@ -23,4 +24,4 @@ svm.fit(X_train_scaled, y_train)
 #save model and scaler
 joblib.dump(svm, SVM_MODEL_PATH)
 joblib.dump(scaler, SVM_SCALER_PATH)
-print("Model saved: models/svm/svm_model.pkl")
+print(f"Model saved: {SVM_MODEL_PATH}")

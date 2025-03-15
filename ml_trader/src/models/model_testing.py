@@ -2,15 +2,14 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 
 from src.config import *
 from src.utils.model_loader import load_model, load_scaler
-from src.data.load_data import load_crypto_data  # Function to load test data
+from src.data.load_data import data_train_test  # Function to load test data
 
 #set up model
 MODEL_PATH = SVM_MODEL_PATH
 SCALER_PATH = SVM_SCALER_PATH
 
-
 # Load test data (Ensure dataset has already been preprocessed)
-X_test, y_test = load_crypto_data(test=True)  # Example function
+X_test, y_test = data_train_test(BTCUSDT_data_path, test=True)  # Example function
 
 # Load trained model & scaler
 model = load_model(MODEL_PATH)
