@@ -1,6 +1,7 @@
 import pandas as pd
 import requests
 import time
+import os
 import src.config
 
 from src.config import *
@@ -37,13 +38,12 @@ def get_binance_ohlcv(start, end, symbol="BTCUSDT", interval="1h"):
 
     return pd.concat(df_list)
 
+file_path = "data/BTCUSDT_hourly.csv"
 print("Started fetching...")
+binance_data = get_binance_ohlcv(TIME_STAMP1, TIME_STAMP2, SYMBOL, "1h",)
 
-btc_data = get_binance_ohlcv(TIME_STAMP2, TIME_STAMP3, SYMBOL, "1h",)
-data = btc_data.to_csv("data/BTCUSDT_hourly_backtest.csv")
-
-if data is not None: print("Successfully saved data.")
-else: print("Failed to save data.")
-
-
-print(btc_data.head())
+try:
+    binance_data.to_csv(file_path)
+    print(binance_data.head())
+except Exception as e:
+    print(f"Failed to save data. Error: {e}")

@@ -9,7 +9,7 @@ from src.config import *
 #load data
 print("Loading data...")
 X_train, X_test, y_train, y_test = data_train_test(BTCUSDT_data_path)
-print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
+print("Training data shapes: ", X_train.shape, X_test.shape, y_train.shape, y_test.shape)
 
 #scale data
 scaler = StandardScaler()

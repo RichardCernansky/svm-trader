@@ -1,6 +1,6 @@
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
 
 from src.config import *
+from src.utils.metrics import class_metrics
 from src.utils.model_loader import load_model, load_scaler
 from src.data.load_data import data_train_test  # Function to load test data
 
@@ -22,10 +22,7 @@ X_test_scaled = scaler.transform(X_test)
 y_pred = model.predict(X_test_scaled)
 
 # Compute evaluation metrics
-accuracy = accuracy_score(y_test, y_pred)
-precision = precision_score(y_test, y_pred, average="macro")  # Use "binary" if it's binary classification
-recall = recall_score(y_test, y_pred, average="macro")
-f1 = f1_score(y_test, y_pred, average="macro")
+accuracy, precision, recall, f1 = class_metrics(y_test, y_pred)
 
 # Print results
 print(f"Model Performance Metrics:")

@@ -1,20 +1,14 @@
 import pandas as pd
 import numpy as np
 import ta
+from typing import Tuple, Union
 from sklearn.model_selection import train_test_split
+from src.config import *
 
 
-def load_crypto_data(filename):
+def load_crypto_data(filename: str) -> pd.DataFrame:
     """
-    Load and preprocess crypto data for model training/testing.
-
-    Args:
-        filename (str): Path to CSV file containing historical crypto data.
-        test (bool): If True, return only test data. Otherwise, return train & test sets.
-
-    Returns:
-        If test=False: (X_train, X_test, y_train, y_test)
-        If test=True: (X_test, y_test)
+    loads crypto data from filename and returns df of selected features
     """
 
     # Load dataset
@@ -23,12 +17,12 @@ def load_crypto_data(filename):
 
     # Compute log returns
     df["log_return"] = np.log(df["Close"] / df["Close"].shift(1)) / np.log(df["Close"])
-    ret_std = df["log_return"].std()
+    ret_std = df["log_return"].std()*1.5
 
     # Define labels based on 1-hour interval price movement
     df["label"] = 0  # Default class (no significant movement)
     df.loc[df["log_return"] >= ret_std, "label"] = 1  # Uptrend
-    df.loc[df["log_return"] <= ret_std, "label"] = -1  # Downtrend
+    df.loc[df["log_return"] <= -ret_std, "label"] = -1  # Downtrend
 
     # === Technical Indicators ===
     # Bollinger Bands
@@ -49,11 +43,13 @@ def load_crypto_data(filename):
     return df
 
 
-def data_train_test(filename, test=False):
+def data_train_test(filename: str, test=False) -> Union[
+    Tuple[pd.DataFrame, pd.Series],  # (X_test, y_test)
+    Tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]  # (X_train, X_test, y_train, y_test)
+]:
     df = load_crypto_data(filename)
 
     # === Feature Selection ===
-    features = ["Close", "Volume", "log_return", "bb_pct", "macd", "macd_signal", "rsi"]
     X = df[features]
     y = df["label"]
 
@@ -67,7 +63,6 @@ def data_train_test(filename, test=False):
 
 def data_backtest(filename):
     df = load_crypto_data(filename)
-    features = ["Close", "Volume", "log_return", "bb_pct", "macd", "macd_signal", "rsi"]
-    X = df[features]
+    X, Y = df[features], df["label"]
 
-    return X
+    return X, Y
