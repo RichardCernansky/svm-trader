@@ -91,7 +91,6 @@ with open(LOGFILE, "a") as f:
     f.write(f"A, P, R, F1 = {accuracy, precision, recall, f1}\n")
 
 
-
 print(f"Highest Portfolio value: {pv_highest}: Percentage return: {perc_ret}%")
 
 
