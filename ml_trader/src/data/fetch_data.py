@@ -6,7 +6,7 @@ import src.config
 
 from src.config import *
 
-def get_binance_ohlcv(start, end, symbol="BTCUSDT", interval="1h"):
+def get_binance_ohlcv(start, end, symbol=SYMBOL, interval=INTERVAL) -> pd.DataFrame:
     """fetches from Binance API into local machine"""
 
     base_url = "https://api.binance.com/api/v3/klines"
@@ -38,12 +38,4 @@ def get_binance_ohlcv(start, end, symbol="BTCUSDT", interval="1h"):
 
     return pd.concat(df_list)
 
-file_path = "data/BTCUSDT_hourly.csv"
-print("Started fetching...")
-binance_data = get_binance_ohlcv(TIME_STAMP1, TIME_STAMP2, SYMBOL, "1h",)
 
-try:
-    binance_data.to_csv(file_path)
-    print(binance_data.head())
-except Exception as e:
-    print(f"Failed to save data. Error: {e}")

@@ -1,0 +1,7 @@
+OPTIMAL GAMMA quest
+- find whether the exists optimal gamma or we need to implement self-optimizing gamma approach
+    - need the model to be tested on multiple different data
+
+TODO:
+- src.data.load_data deprecated functions and imports
+- src.models.model_tester all deprecated

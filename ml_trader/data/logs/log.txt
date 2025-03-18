@@ -1,6 +1,7 @@
 MODEL_PATH = models/svm/svm_model.pkl
 pv_highest = 125.96243936117709
 perc_ret = 25.9624%
-min_return_ratio = 1.7976931348623157e+308  # For risk assessment
-optimal_gamma = 0.34500000000000003
+min_return_ratio = -3.5074304%
+optimal_gamma = 0.345
 A, P, R, F1 = (0.8336, 0.5222, 0.6998, 0.5717)
+

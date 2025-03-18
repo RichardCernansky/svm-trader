@@ -1,21 +1,18 @@
 import sys
-
+import pandas as pd
 
 from src.config import *
+from src.utils.logs import log_results
 from src.utils.metrics import class_metrics
 from src.utils.model_loader import load_model, load_scaler
-from src.data.load_data import data_train_test, data_backtest  # Function to load test data
-
-#set up model
-MODEL_PATH = SVM_MODEL_PATH
-SCALER_PATH = SVM_SCALER_PATH
+from src.data.load_data import enhance_data# Function to load test data
 
 
-def long_only_automaton(gamma, preds, margin_dists, prices) -> [int, int]:
+def lo_automaton(gamma, preds, margin_dists, prices) -> [int, int]:
     cash= CASH_INIT #initial cash value
     btc= BTC_INIT #initial btc value
     pv = PV_INIT #portfolio value at the beginning = initial cash investment
-    min_return_ratio = sys.float_info.max
+    min_return_ratio = 1000
 
     c1 = 1
     c2 = -1
@@ -33,8 +30,8 @@ def long_only_automaton(gamma, preds, margin_dists, prices) -> [int, int]:
                 btc = 0
                 pv = cash
 
-            return_ratio = (btc * prices[i] - pv) / pv
-            min_return_ratio = min(min_return_ratio, return_ratio)
+            return_ratio = (btc * prices[i] - pv) / pv # how much more percentage of value do we have (can be also negative)
+            min_return_ratio = min(return_ratio, min_return_ratio)
 
             if return_ratio >= STOP_PROFIT or return_ratio <= STOP_LOSS:
                 cash = btc * prices[i]
@@ -43,57 +40,40 @@ def long_only_automaton(gamma, preds, margin_dists, prices) -> [int, int]:
 
     return pv, min_return_ratio
 
+def run_lo_automaton(model_path: str, scaler_path: str, test_data: pd.DataFrame):
+    # Load test data (Ensure dataset has already been preprocessed)
+    test_data = enhance_data(test_data)
+    X = test_data[DATA_FEATURES]
+    y_true = test_data["label"]
 
+    print(X.head())
 
-# Load test data (Ensure dataset has already been preprocessed)
-df, y_true = data_backtest(BTCUSDT_backtest_data_path)  # Example function
-print(df.head())
+    # Load trained model & scaler
+    model = load_model(model_path)
+    scaler = load_scaler(scaler_path)
+    X_transf = scaler.transform(X)
 
-# Load trained model & scaler
-model = load_model(MODEL_PATH)
-scaler = load_scaler(SCALER_PATH)
+    # Make predictions and prep for long_only
+    y_pred = model.predict(X_transf).tolist()
+    y_pred_probs = model.predict_proba(X_transf).tolist()
+    accuracy, precision, recall, f1 = class_metrics(y_true, y_pred)
+    prices = X["Close"].tolist()
 
-# Scale test data
-df_transf = scaler.transform(df)
+    pv_highest = 0
+    min_rr= sys.float_info.max
+    optimal_gamma = GAMMAS[0]
+    for gamma in GAMMAS:
+        margin_dist = [prob[y_pred[i]] - gamma for i,prob in enumerate(y_pred_probs)]
+        pv, mrr = lo_automaton(gamma, y_pred, margin_dist, prices)
 
-# Make predictions and prep for long_only
-y_pred = model.predict(df_transf).tolist()
-y_pred_probs = model.predict_proba(df_transf).tolist()
-accuracy, precision, recall, f1 = class_metrics(y_true, y_pred)
-prices = df["Close"].tolist()
+        if pv > pv_highest: # for optimal gamma, record the metrics
+            optimal_gamma = gamma
+            pv_highest = max(pv, pv_highest)
+            min_rr = min(min_rr, mrr)
 
-pv_highest = 0
-min_rr= sys.float_info.max
-optimal_gamma = GAMMAS[0]
-for gamma in GAMMAS:
-    margin_dist = [prob[y_pred[i]] - gamma for i,prob in enumerate(y_pred_probs)]
-    pv, mrr = long_only_automaton(gamma, y_pred, margin_dist, prices)
+    log_results(pv_highest, min_rr, optimal_gamma, accuracy, precision, recall, f1)
 
-    if pv > pv_highest: # for obtaining the optimal gamma
-        optimal_gamma = gamma
-        pv_highest = max(pv, pv_highest)
-    min_return_ratio = min(min_rr, mrr)
-
-
-#log values
-# MODEL_PATH
-# pv_highest
-# pv_ratio
-# min_return_ratio - for risk assessment
-# optimal_gamma
-perc_ret = round((pv_highest/PV_INIT - 1) * 100,4)
-with open(LOGFILE, "a") as f:
-    f.write(f"MODEL_PATH = {MODEL_PATH}\n")
-    f.write(f"pv_highest = {pv_highest}\n")
-    f.write(f"perc_ret = {perc_ret}%\n")
-    f.write(f"min_return_ratio = {min_rr}  # For risk assessment\n")
-    f.write(f"optimal_gamma = {optimal_gamma}\n")
-    f.write(f"A, P, R, F1 = {accuracy, precision, recall, f1}\n")
-
-
-print(f"Highest Portfolio value: {pv_highest}: Percentage return: {perc_ret}%")
-
-
+    return
 
 
 
