@@ -19,7 +19,7 @@ def log_results(pv_highest, min_return_ratio, optimal_gamma, accuracy, precision
         f.write(f"A, P, R, F1 = {accuracy, precision, recall, f1}\n")
         f.write(f"\n")
 
-    print(f"Highest Portfolio value: {pv_highest}: Percentage return: {perc_ret}%")
+    print(f"Highest Portfolio value: {pv_highest}: Percentage return: {perc_ret}%\n\n")
 
 def process_log():
 

@@ -4,8 +4,10 @@
 SYMBOL = "BTCUSDT"
 INTERVAL = "1h"
 
-START_DATE = "2020-01-01"
+START_DATE = "2017-01-01"
 END_DATE = "2025-03-11"
+TRAIN_MONTHS = 6
+TEST_MONTHS = 3
 
 LOGFILE = "data/logs/log.txt"
 MODEL = "svm"
@@ -22,7 +24,9 @@ STOP_PROFIT = 100  # (%) profit value to get out of the market
 STOP_LOSS = 5  # (%) loss value to get out of the market,
 
 DATA_FEATURES = ["Close", "Volume", "bb_pct", "macd", "macd_signal", "rsi"]
-GAMMAS = [0.34 + i * 0.0005 for i in range(200)]
+# GAMMAS = [0.34 + i * 0.0005 for i in range(200)]
+# GAMMAS = [0.35]
+GAMMA = 0.33
 
 
 

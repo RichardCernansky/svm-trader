@@ -6,7 +6,6 @@ from sklearn.model_selection import train_test_split
 from src.config import *
 
 def enhance_data(df: pd.DataFrame) -> pd.DataFrame:
-    df.set_index("timestamp", inplace=True)
 
     # Compute log returns
     df["log_return"] = np.log(df["Close"] / df["Close"].shift(1)) / np.log(df["Close"])
