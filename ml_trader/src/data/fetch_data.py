@@ -15,6 +15,7 @@ def get_binance_ohlcv(start, end, symbol=SYMBOL, interval=INTERVAL) -> pd.DataFr
     start_ts = int(pd.Timestamp(start).timestamp() * 1000)
     end_ts = int(pd.Timestamp(end).timestamp() * 1000)
 
+    print("Started fetching data...")
     while start_ts < end_ts:
         url = f"{base_url}?symbol={symbol}&interval={interval}&startTime={start_ts}&limit=1000"
         response = requests.get(url).json()

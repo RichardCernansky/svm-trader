@@ -5,3 +5,4 @@ OPTIMAL GAMMA quest
 TODO:
 - src.data.load_data deprecated functions and imports
 - src.models.model_tester all deprecated
+- src.strategies.long_only_testing .predict doesnt match with .decision_function

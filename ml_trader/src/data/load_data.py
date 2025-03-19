@@ -9,12 +9,12 @@ def enhance_data(df: pd.DataFrame) -> pd.DataFrame:
 
     # Compute log returns
     df["log_return"] = np.log(df["Close"] / df["Close"].shift(1)) / np.log(df["Close"])
-    ret_std = df["log_return"].std()*1.5
+    ret_std = df["log_return"].std()
 
     # Define labels based on 1-hour interval price movement
     df["label"] = 0  # Default class (no significant movement)
-    df.loc[df["log_return"] >= ret_std, "label"] = 1  # Uptrend
-    df.loc[df["log_return"] <= -ret_std, "label"] = -1  # Downtrend
+    df.loc[df["log_return"] >= ret_std, "label"] = C2  # Uptrend
+    df.loc[df["log_return"] <= -ret_std, "label"] = C0  # Downtrend
 
     # === Technical Indicators ===
     # Bollinger Bands
